@@ -1,0 +1,85 @@
+<!-- Tailwind Play CDN (quick dev/prototype setup). Remove if already included in header.ejs -->
+<script src="https://cdn.tailwindcss.com"></script>
+
+<nav class="w-full bg-white dark:bg-gray-800 border-b">
+  <div class="container mx-auto px-4 py-3 flex items-center justify-between">
+    <!-- Logo / Title -->
+    <div class="flex items-center gap-3">
+      <a href="/" class="text-white font-semibold color-white">QuizApp</a>
+      <!-- simple dark mode icon (no JS toggle here) -->
+      <span class="text-lg" title="Toggle theme">🌙</span>
+    </div>
+
+    <!-- Right: user actions -->
+    <div class="flex items-center gap-3">
+      <% if (typeof user !== 'undefined' && user) { %>
+        <span class="text-white">Hi, <%= user.username %></span>
+        <a href="/" class="btn-primary text-sm">Home</a>
+
+
+        <% if (user.role === 'creator') { %>
+          <a href="create-quiz" class="btn-primary text-sm">Create Quiz</a>
+          <a href="my-quizzes" class="btn-secondary text-sm">My Quizzes</a>
+          <a href="my-results" class="btn-secondary text-sm">Results</a>
+        <% } else { %>
+          <a href="/quiz-list" class="btn-primary text-sm">Take Quiz</a>
+        <% } %>
+
+        <a href="/logout" class="btn-logout text-sm ">Logout</a>
+      <% } else { %>
+        <a href="/login" class="btn-secondary btn-primary text-sm">Login</a>
+        <a href="/register" class="btn-secondary text-sm">Register</a>
+      <% } %>
+    </div>
+  </div>
+</nav>
+
+<!-- Optional local CSS for the named classes (keeps the exact .btn-primary / .btn-secondary names) -->
+<style>
+  /* .btn-primary: matches Tailwind look used elsewhere */
+  .btn-primary {
+    display: inline-block;
+    padding: 0.5rem 1rem;
+    background-color: #3b82f6; /* primary from your config */
+    color: #ffffff;
+    border-radius: 0.5rem;
+    text-decoration: none;
+    transition: background-color .15s ease;
+  }
+  .btn-primary:hover { background-color: #2563eb; }
+
+  /* .btn-secondary: muted / border style */
+  .btn-secondary {
+    display: inline-block;
+    padding: 0.5rem 1rem;
+    background-color: #f3f4f6; /* gray-100 */
+    color: #000000;
+    border-radius: 0.5rem;
+    text-decoration: none;
+    border: 1px solid rgba(0,0,0,0.04);
+    transition: background-color .15s ease;
+  }
+  .btn-secondary:hover { background-color: #e5e7eb; }
+
+  /* Dark mode adjustments when `dark` class is on <html> or <body> */
+  .dark .btn-secondary {
+    background-color: #374151; /* gray-700 */
+    color: #e5e7eb;
+    border-color: rgba(255,255,255,0.06);
+  }
+  .dark .btn-secondary:hover { background-color: #4b5563; }
+  .btn-logout{
+    background-color: red;
+     display: inline-block;
+    padding: 0.5rem 1rem;
+    color: #000000;
+    border-radius: 0.5rem;
+    text-decoration: none;
+    border: 1px solid rgba(0,0,0,0.04);
+    transition: background-color .15s ease;
+  }
+  .btn-logout:hover{
+    background-color: rgb(182, 3, 3);
+    color: #ffffff;
+  }
+</style>

@@ -1,0 +1,16 @@
+body {
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.dark body {
+  background-color: #1a202c;
+  color: #e2e8f0;
+}
+
+.quiz-question-card {
+  transition: transform 0.2s ease;
+}
+
+.quiz-question-card:hover {
+  transform: translateY(-2px);
+}

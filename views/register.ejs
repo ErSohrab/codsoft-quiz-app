@@ -1,0 +1,71 @@
+<%- include('partials/header') %>
+<%- include('partials/navbar') %>
+
+<!-- Load Tailwind only if not already loaded (safe if header already includes it) -->
+<script>
+  if (typeof window !== 'undefined' && typeof window.tailwind === 'undefined') {
+    var s = document.createElement('script');
+    s.src = "https://cdn.tailwindcss.com";
+    document.head.appendChild(s);
+  }
+</script>
+
+<main class="container mx-auto px-4 py-10 max-w-lg">
+  <h1 class="text-3xl font-extrabold mb-4">Register</h1>
+
+  <% if (typeof error !== 'undefined' && error) { %>
+    <div class="mb-4 rounded-lg border-l-4 border-red-500 bg-red-50 p-4 text-red-700">
+      <%= error %>
+    </div>
+  <% } %>
+
+  <% if (typeof success !== 'undefined' && success) { %>
+    <div class="mb-4 rounded-lg border-l-4 border-green-500 bg-green-50 p-4 text-green-700">
+      <%= success %>
+    </div>
+  <% } %>
+
+  <form action="/register" method="POST" class="space-y-4 bg-white p-6 rounded-2xl shadow-sm">
+    <div>
+      <label for="username" class="block text-sm font-medium mb-1">Username</label>
+      <input id="username" name="username" type="text" required
+             class="w-full rounded-lg border px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary" />
+    </div>
+
+    <div>
+      <label for="email" class="block text-sm font-medium mb-1">Email</label>
+      <input id="email" name="email" type="email" required
+             class="w-full rounded-lg border px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary" />
+    </div>
+
+    <div>
+      <label for="password" class="block text-sm font-medium mb-1">Password</label>
+      <input id="password" name="password" type="password" required
+             class="w-full rounded-lg border px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary" />
+    </div>
+
+    <div>
+      <label for="role" class="block text-sm font-medium mb-1">Register As</label>
+      <select id="role" name="role" required
+              class="w-full rounded-lg border px-3 py-2 bg-white focus:outline-none focus:ring-2 focus:ring-primary">
+        <option value="">Select Role</option>
+        <option value="creator">Quiz Creator</option>
+        <option value="candidate">Quiz Candidate</option>
+      </select>
+    </div>
+
+    <div class="pt-2">
+      <button type="submit"
+              class="w-full inline-block px-4 py-2 rounded-lg bg-primary text-white font-medium hover:opacity-95 transition">
+        Register
+      </button>
+    </div>
+  </form>
+
+  <p class="mt-4 text-sm text-gray-600">
+    Already have an account?
+    <a href="/login" class="text-primary font-medium hover:underline">Login here</a>
+  </p>
+</main>
+
+<%- include('partials/footer') %>

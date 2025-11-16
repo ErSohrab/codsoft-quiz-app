@@ -1,0 +1,47 @@
+<%- include('partials/header') %>
+<%- include('partials/navbar') %>
+
+<!-- Tailwind Play CDN (quick setup) -->
+<script src="https://cdn.tailwindcss.com"></script>
+
+<main class="container mx-auto px-4 py-8">
+  <h1 class="text-3xl font-extrabold mb-2">Welcome to Quiz App</h1>
+  <p class="text-gray-600 mb-6">Create engaging quizzes or test your knowledge with our interactive platform</p>
+
+  <% if (!user) { %>
+    <section class="grid gap-6 md:grid-cols-2 mb-6">
+      <article class="border rounded-2xl p-6 shadow-sm hover:shadow-md transition">
+        <h2 class="text-2xl font-semibold mb-2">📝 Quiz Creator</h2>
+        <p class="text-gray-600 mb-4">Build custom quizzes and track candidate performance</p>
+        <!-- adjust hrefs to match your app routes -->
+        <a class="inline-block bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700" href="/register">Register as Creator</a>
+      </article>
+
+      <article class="border rounded-2xl p-6 shadow-sm hover:shadow-md transition">
+        <h2 class="text-2xl font-semibold mb-2">🎯 Quiz Taker</h2>
+        <p class="text-gray-600 mb-4">Take quizzes and improve your knowledge</p>
+        <a class="inline-block bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700" href="/register">Register as Candidate</a>
+      </article>
+    </section>
+
+    <p class="text-sm">Already have an account? <a class="text-indigo-600 hover:underline" href="/login">Login here</a></p>
+  <% } else { %>
+    <section class="bg-white border rounded-2xl p-6 shadow-sm">
+      <p class="text-lg mb-4">Welcome back, <span class="font-semibold"><%= user.username %></span>!</p>
+
+      <% if (user.role === 'creator') { %>
+        <div class="flex flex-col md:flex-row gap-3">
+          <a class="inline-block bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700" href="create-quiz">➕ Create New Quiz</a>
+          <a class="inline-block bg-gray-100 border px-4 py-2 rounded-lg hover:bg-gray-200" href="/my-quizzes">📋 View My Quizzes</a>
+          <a class="inline-block bg-gray-100 border px-4 py-2 rounded-lg hover:bg-gray-200" href="/quiz-result">📊 View Results</a>
+        </div>
+      <% } else { %>
+        <div class="flex justify-center">
+          <a class="inline-block bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700" href="/quiz-list">🎯 Browse Available Quizzes</a>
+        </div>
+      <% } %>
+    </section>
+  <% } %>
+</main>
+
+<%- include('partials/footer') %>

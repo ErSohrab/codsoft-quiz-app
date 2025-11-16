@@ -1,0 +1,62 @@
+<%- include('partials/header') %>
+<%- include('partials/navbar') %>
+
+<main class="min-h-[70vh] flex items-center justify-center py-16 px-4">
+  <div class="w-full max-w-2xl bg-white dark:bg-gray-800 rounded-2xl shadow-md p-8 sm:p-12 text-center">
+    <!-- design variables (kept minimal — Tailwind handles most styling) -->
+    <style>
+      :root{
+        --accent: #e74c3c;
+        --cta: #3498db;
+        --cta-hover: #2980b9;
+        --muted: #7f8c8d;
+      }
+      .focus-ring:focus {
+        outline: 3px solid rgba(59,130,246,0.15);
+        outline-offset: 3px;
+        border-radius: 0.5rem;
+      }
+    </style>
+
+    <!-- Title -->
+    <h1 class="text-3xl sm:text-4xl font-extrabold mb-3 text-[var(--accent)]">
+      <%= typeof title !== 'undefined' ? title : 'Oops! Page Not Found' %>
+    </h1>
+
+    <!-- Description -->
+    <p class="text-sm sm:text-base text-gray-600 dark:text-gray-300 mb-6">
+      The page you are looking for might have been removed, had its name changed, or is temporarily unavailable.
+    </p>
+
+    <!-- Navigation CTAs -->
+    <div class="flex flex-col sm:flex-row items-center justify-center gap-3 mb-6">
+      <a href="/" class="inline-flex items-center justify-center px-5 py-2 rounded-lg bg-[var(--cta)] hover:bg-[var(--cta-hover)] text-white font-medium transition focus-ring">
+        Home
+      </a>
+
+      <a href="/contact" class="inline-flex items-center justify-center px-5 py-2 rounded-lg border border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-200 bg-transparent hover:bg-gray-50 dark:hover:bg-gray-700 transition focus-ring">
+        Contact Support
+      </a>
+    </div>
+
+    <!-- Helpful links / quick nav -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-left mb-6">
+      <a href="/quizzes" class="block p-3 rounded-lg bg-gray-50 dark:bg-gray-700 hover:shadow-sm transition">
+        <div class="text-sm font-medium">Browse Quizzes</div>
+        <div class="text-xs text-gray-500 dark:text-gray-300">See available quizzes to take</div>
+      </a>
+
+      <a href="/register" class="block p-3 rounded-lg bg-gray-50 dark:bg-gray-700 hover:shadow-sm transition">
+        <div class="text-sm font-medium">Create an account</div>
+        <div class="text-xs text-gray-500 dark:text-gray-300">Become a creator or candidate</div>
+      </a>
+    </div>
+
+    <!-- Branding / Illustration -->
+    <div class="mt-4 flex items-center justify-center">
+      <img src="/images/brand-logo.png" alt="Brand logo" class="w-20 h-20 object-contain opacity-80" onerror="this.style.display='none'">
+    </div>
+  </div>
+</main>
+
+<%- include('partials/footer') %>

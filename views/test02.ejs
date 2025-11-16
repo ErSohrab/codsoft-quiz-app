@@ -1,0 +1,72 @@
+
+
+
+
+<%- include('partials/header') %>
+  <%- include('partials/navbar') %>
+
+
+
+
+    Welcome to Quiz App
+
+
+    Create engaging quizzes or test your knowledge with our interactive platform
+
+
+    <% if (!user) { %>
+
+
+      📝
+      Quiz Creator
+
+      Build custom quizzes and track candidate performance
+
+
+      Register as Creator
+
+
+
+
+      🎯
+      Quiz Taker
+
+      Take quizzes and improve your knowledge
+
+
+      Register as Candidate
+
+
+
+
+
+      Already have an account?
+      Login here
+
+      <% } else { %>
+
+        Welcome back, <%= user.username %>!
+
+          <% if (user.role==='creator' ) { %>
+
+
+            ➕ Create New Quiz
+
+
+            📋 View My Quizzes
+
+
+            📊 View Results
+
+
+            <% } else { %>
+
+              🎯 Browse Available Quizzes
+
+              <% } %>
+
+                <% } %>
+
+
+
+                  <%- include('partials/footer') %>

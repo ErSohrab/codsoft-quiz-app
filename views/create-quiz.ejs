@@ -1,0 +1,176 @@
+<%- include('partials/header') %>
+<%- include('partials/navbar') %>
+
+<!-- Load Tailwind only if not already loaded -->
+<script>
+  if (typeof window !== 'undefined' && typeof window.tailwind === 'undefined') {
+    var s = document.createElement('script');
+    s.src = "https://cdn.tailwindcss.com";
+    document.head.appendChild(s);
+  }
+</script>
+
+<main class="container mx-auto px-4 py-8 max-w-3xl">
+  <h1 class="text-2xl font-extrabold mb-4">Create New Quiz</h1>
+
+  <% if (typeof error !== 'undefined' && error) { %>
+    <div class="mb-4 rounded-lg border-l-4 border-red-500 bg-red-50 p-4 text-red-700">
+      <%= error %>
+    </div>
+  <% } %>
+
+  <% if (typeof success !== 'undefined' && success) { %>
+    <div class="mb-4 rounded-lg border-l-4 border-green-500 bg-green-50 p-4 text-green-700">
+      <%= success %>
+    </div>
+  <% } %>
+
+  <form id="quiz-form" action="/create-quiz" method="POST" class="space-y-6 bg-white p-6 rounded-2xl shadow-sm">
+    <div>
+      <label for="quiz-title" class="block text-sm font-medium mb-1">Quiz Title</label>
+      <input id="quiz-title" name="quizTitle" type="text" required
+             class="w-full rounded-lg border px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary" />
+    </div>
+
+    <div>
+      <div class="flex items-center justify-between mb-2">
+        <h2 class="text-lg font-medium">Questions</h2>
+        <button type="button" id="add-question-btn" class="inline-block px-3 py-1 rounded-lg bg-indigo-600 text-white text-sm hover:bg-indigo-700">
+          ➕ Add Question
+        </button>
+      </div>
+
+      <div id="questions-container" class="space-y-4"></div>
+    </div>
+
+    <!-- Hidden fields that will be filled by JS before submit -->
+    <input type="hidden" id="hidden-title" name="title" />
+    <input type="hidden" id="hidden-questions" name="questions" />
+
+    <div>
+      <button type="submit" class="inline-block w-full px-4 py-2 rounded-lg bg-primary text-white font-medium hover:opacity-95 transition">
+        Create Quiz
+      </button>
+    </div>
+  </form>
+</main>
+
+<script>
+  // Keep quiz state local to this page
+  (function () {
+    // Guard for DOM access in case this script loads before DOM (we'll wait)
+    document.addEventListener('DOMContentLoaded', function () {
+      let questionCount = 0;
+
+      const container = document.getElementById('questions-container');
+      const addBtn = document.getElementById('add-question-btn');
+      const quizForm = document.getElementById('quiz-form');
+
+      function createQuestionElement(index) {
+        const questionDiv = document.createElement('div');
+        questionDiv.className = 'bg-gray-50 dark:bg-gray-700 p-6 rounded-lg relative';
+        questionDiv.dataset.qindex = index;
+
+        // Inner HTML for one question block (keeps original labels / semantics)
+        questionDiv.innerHTML = `
+          <div class="flex items-start justify-between mb-3">
+            <h3 class="text-md font-semibold">Question ${index + 1}</h3>
+            <button type="button" class="remove-question text-red-500 hover:text-red-700 text-sm" title="Remove question">✕</button>
+          </div>
+
+          <div class="mb-3">
+            <label class="block text-sm font-medium mb-1">Question Text</label>
+            <input type="text" class="question-text w-full rounded-lg border px-3 py-2" required />
+          </div>
+
+          <div class="mb-3">
+            <label class="block text-sm font-medium mb-1">Options</label>
+            <div class="space-y-2">
+              <input type="text" class="option w-full rounded-lg border px-3 py-2" placeholder="Option 1" required />
+              <input type="text" class="option w-full rounded-lg border px-3 py-2" placeholder="Option 2" required />
+              <input type="text" class="option w-full rounded-lg border px-3 py-2" placeholder="Option 3" required />
+              <input type="text" class="option w-full rounded-lg border px-3 py-2" placeholder="Option 4" required />
+            </div>
+          </div>
+
+          <div>
+            <label class="block text-sm font-medium mb-1">Correct Answer (0-3)</label>
+            <select class="correct-answer w-full rounded-lg border px-3 py-2">
+              <option value="0">Option 1</option>
+              <option value="1">Option 2</option>
+              <option value="2">Option 3</option>
+              <option value="3">Option 4</option>
+            </select>
+          </div>
+        `;
+
+        // Wire up remove button
+        questionDiv.querySelector('.remove-question').addEventListener('click', function () {
+          questionDiv.remove();
+          // Re-number remaining questions
+          Array.from(container.children).forEach((child, idx) => {
+            const h3 = child.querySelector('h3');
+            if (h3) h3.textContent = 'Question ' + (idx + 1);
+            child.dataset.qindex = idx;
+          });
+          questionCount = container.children.length;
+        });
+
+        return questionDiv;
+      }
+
+      function addQuestion() {
+        const qEl = createQuestionElement(questionCount);
+        container.appendChild(qEl);
+        questionCount++;
+      }
+
+      // Add first question by default (preserves original behaviour)
+      addQuestion();
+
+      // Add question button
+      addBtn.addEventListener('click', addQuestion);
+
+      // Form submit: gather questions into hidden fields (title also copied)
+      quizForm.addEventListener('submit', function (e) {
+        // Build questions array from DOM
+        const titleField = document.getElementById('quiz-title');
+        const hiddenTitle = document.getElementById('hidden-title');
+        const hiddenQuestions = document.getElementById('hidden-questions');
+
+        const questionDivs = Array.from(container.querySelectorAll('div[data-qindex]'));
+        const questions = [];
+
+        questionDivs.forEach((div) => {
+          const questionTextEl = div.querySelector('.question-text');
+          const optionsEls = Array.from(div.querySelectorAll('.option'));
+          const correctEl = div.querySelector('.correct-answer');
+
+          const questionText = questionTextEl ? questionTextEl.value.trim() : '';
+          const options = optionsEls.map(o => o.value);
+          const correctAnswer = parseInt(correctEl ? correctEl.value : '0', 10);
+
+          questions.push({
+            question: questionText,
+            options: options,
+            correctAnswer: correctAnswer
+          });
+        });
+
+        if (questions.length === 0) {
+          e.preventDefault();
+          alert('Please add at least one question!');
+          return;
+        }
+
+        // copy title and questions JSON to hidden inputs so server receives them
+        hiddenTitle.value = titleField ? titleField.value : '';
+        hiddenQuestions.value = JSON.stringify(questions);
+
+        // allow form to submit normally
+      });
+    });
+  })();
+</script>
+
+<%- include('partials/footer') %>

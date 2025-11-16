@@ -1,0 +1,43 @@
+<%- include('partials/header') %>
+<%- include('partials/navbar') %>
+
+<!-- Load Tailwind only if not already present (safe if header already includes it) -->
+<% /* Clean + modern + slightly more stylish quiz listing — still simple, but with nicer visuals */ %>
+<script>
+  if (typeof window !== 'undefined' && typeof window.tailwind === 'undefined') {
+    var s = document.createElement('script');
+    s.src = "https://cdn.tailwindcss.com";
+    document.head.appendChild(s);
+  }
+</script>
+
+<main class="container mx-auto px-4 py-10 max-w-6xl">
+  <h1 class="text-3xl font-bold mb-8 text-gray-900 tracking-tight">Available Quizzes</h1>
+
+  <% if (!quizzes || !Array.isArray(quizzes) || quizzes.length === 0) { %>
+    <div class="bg-white p-8 rounded-xl shadow text-center border border-gray-100">
+      <p class="text-lg text-gray-700">No quizzes available at the moment.</p>
+    </div>
+  <% } else { %>
+    <div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+      <% quizzes.forEach(function(quiz) { %>
+        <div class="bg-white border border-gray-200 rounded-2xl shadow-sm hover:shadow-md transition-shadow duration-200 p-6 flex flex-col justify-between">
+
+          <div>
+            <h2 class="text-xl font-semibold text-gray-900 mb-2 leading-snug"><%= quiz.title %></h2>
+            <p class="text-sm text-gray-600 mb-1">By <span class="font-medium"><%= quiz.creatorName %></span></p>
+            <p class="text-sm text-gray-500"><%= (quiz.questions && quiz.questions.length) ? quiz.questions.length : 0 %> Questions</p>
+          </div>
+
+          <div class="mt-6">
+            <a href="/take-quiz/<%= quiz._id %>" class="block w-full text-center px-4 py-2.5 rounded-lg bg-indigo-600 text-white font-medium hover:bg-indigo-700 transition-colors">
+              Take Quiz
+            </a>
+          </div>
+        </div>
+      <% }) %>
+    </div>
+  <% } %>
+</main>
+
+<%- include('partials/footer') %>

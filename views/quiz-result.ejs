@@ -1,0 +1,103 @@
+<%- include('partials/header') %>
+<%- include('partials/navbar') %>
+
+<!-- Load Tailwind only if not already present (safe if header already includes it) -->
+<script>
+  if (typeof window !== 'undefined' && typeof window.tailwind === 'undefined') {
+    var s = document.createElement('script');
+    s.src = "https://cdn.tailwindcss.com";
+    document.head.appendChild(s);
+  }
+</script>
+
+<main class="container mx-auto px-4 py-8 max-w-4xl">
+  <div class="bg-white p-6 rounded-2xl shadow-sm">
+    <h1 class="text-2xl font-extrabold mb-2">Quiz Completed!</h1>
+
+    <% if (typeof result !== 'undefined' && result) { %>
+      <p class="text-lg text-gray-700 mb-4"><%= result.quizTitle %></p>
+
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
+        <div class="p-4 bg-green-50 rounded-lg text-center">
+          <div class="text-sm text-gray-500">Correct</div>
+          <div class="text-2xl font-semibold"><%= typeof result.score !== 'undefined' ? result.score : '' %></div>
+        </div>
+
+        <div class="p-4 bg-indigo-50 rounded-lg text-center">
+          <div class="text-sm text-gray-500">Score</div>
+          <div class="text-2xl font-semibold">
+            <% if (typeof result.percentage !== 'undefined' && result.percentage !== null && !isNaN(result.percentage)) { %>
+              <%= result.percentage.toFixed(1) %>%
+            <% } else { %>
+              N/A
+            <% } %>
+          </div>
+        </div>
+
+        <div class="p-4 bg-gray-50 rounded-lg text-center">
+          <div class="text-sm text-gray-500">Total</div>
+          <div class="text-2xl font-semibold"><%= typeof result.totalQuestions !== 'undefined' ? result.totalQuestions : '' %></div>
+        </div>
+      </div>
+
+      <div class="mb-6">
+        <a href="/quizzes" class="inline-block px-4 py-2 rounded-lg bg-primary text-white hover:opacity-95">Take Another Quiz</a>
+      </div>
+
+      <section>
+        <h2 class="text-lg font-semibold mb-3">Detailed Results</h2>
+
+        <% if (!Array.isArray(result.answers) || result.answers.length === 0) { %>
+          <div class="text-sm text-gray-600">No detailed answers available.</div>
+        <% } else { %>
+          <div class="space-y-4">
+            <% result.answers.forEach(function(answer, index) { 
+                 var q = (result.quizId && Array.isArray(result.quizId.questions)) ? result.quizId.questions[index] : null;
+            %>
+              <div class="p-4 bg-gray-50 rounded-lg">
+                <div class="flex items-center justify-between mb-2">
+                  <div class="font-medium">Question <%= index + 1 %></div>
+                  <div class="text-sm <%= answer.isCorrect ? 'text-green-600' : 'text-red-600' %>">
+                    <%= answer.isCorrect ? '✓ Correct' : '✗ Incorrect' %>
+                  </div>
+                </div>
+
+                <div class="mb-2 text-gray-800">
+                  <%= q ? q.question : 'Question text unavailable' %>
+                </div>
+
+                <div class="text-sm text-gray-700 mb-1">
+                  <span class="font-medium">Your Answer:</span>
+                  <span>
+                    <% if (q && q.options && typeof answer.selectedAnswer !== 'undefined' && q.options[answer.selectedAnswer] !== undefined) { %>
+                      <%= q.options[answer.selectedAnswer] %>
+                    <% } else { %>
+                      Not answered
+                    <% } %>
+                  </span>
+                </div>
+
+                <% if (!answer.isCorrect) { %>
+                  <div class="text-sm text-gray-700">
+                    <span class="font-medium">Correct Answer:</span>
+                    <span>
+                      <% if (q && q.options && typeof answer.correctAnswer !== 'undefined' && q.options[answer.correctAnswer] !== undefined) { %>
+                        <%= q.options[answer.correctAnswer] %>
+                      <% } else { %>
+                        Unavailable
+                      <% } %>
+                    </span>
+                  </div>
+                <% } %>
+              </div>
+            <% }) %>
+          </div>
+        <% } %>
+      </section>
+    <% } else { %>
+      <div class="text-sm text-gray-600">Result data is not available.</div>
+    <% } %>
+  </div>
+</main>
+
+<%- include('partials/footer') %>

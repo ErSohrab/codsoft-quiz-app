@@ -1,0 +1,202 @@
+<%- include('partials/header') %>
+  <%- include('partials/navbar') %>
+
+    <!-- Load Tailwind only if not already present (safe if header already includes it) -->
+    <script>
+      if (typeof window !== 'undefined' && typeof window.tailwind === 'undefined') {
+        var s = document.createElement('script');
+        s.src = "https://cdn.tailwindcss.com";
+        document.head.appendChild(s);
+      }
+    </script>
+
+    <main class="container mx-auto px-4 py-8 max-w-3xl">
+      <% if (typeof quiz==='undefined' || !quiz) { %>
+        <div class="bg-white p-6 rounded-2xl shadow-sm text-center">
+          <p class="text-lg text-gray-700">Quiz not found.</p>
+        </div>
+        <% } else { %>
+          <div class="bg-white p-6 rounded-2xl shadow-sm">
+            <header class="mb-6">
+              <h1 class="text-2xl font-extrabold">
+                <%= quiz.title %>
+              </h1>
+              <p class="text-sm text-gray-500">By: <%= quiz.creatorName %>
+              </p>
+            </header>
+
+            <form id="take-quiz-form" action="/quizzes/<%= quiz._id %>/submit" method="POST" class="space-y-6">
+              <!-- Hidden fields -->
+              <input type="hidden" id="quiz-id" name="quizId" value="<%= quiz._id %>" />
+              <input type="hidden" id="answers-json" name="answers" />
+
+              <!-- Question area -->
+              <div id="question-area" class="space-y-4"></div>
+
+              <!-- Navigation -->
+              <div class="flex items-center justify-between gap-3 mt-4">
+                <button type="button" id="prev-btn" class="px-4 py-2 rounded-lg bg-gray-100 hover:bg-gray-200"
+                  disabled>← Previous</button>
+
+                <div class="flex items-center gap-2">
+                  <span id="progress" class="text-sm text-gray-600"></span>
+                </div>
+
+                <button type="button" id="next-btn"
+                  class="px-4 py-2 rounded-lg bg-indigo-600 text-white hover:bg-indigo-700">Next →</button>
+              </div>
+
+              <!-- Submit (visible on last question) -->
+              <div class="mt-4">
+                <button id="submit-btn" type="submit"
+                  class="w-full px-4 py-2 rounded-lg bg-green-600 text-white hover:bg-green-700 hidden">
+                  Submit Quiz
+                </button>
+              </div>
+            </form>
+          </div>
+          <% } %>
+    </main>
+
+    <%- include('partials/footer') %>
+
+      <script>
+  (function () {
+    // embed server-side quiz safely into client-side JS
+    // use <%- %> (raw) to inject the JSON; JSON.stringify on server makes a valid JS object literal
+    const quiz = <%- JSON.stringify(quiz || {}) %>;
+
+    // sanity check
+    if (!quiz || !Array.isArray(quiz.questions)) {
+      console.warn('No quiz questions provided or questions is not an array', quiz);
+      // optionally render "Quiz not found" UI or return
+    }
+
+    const questions = Array.isArray(quiz.questions) ? quiz.questions : [];
+    let currentIndex = 0;
+    const answers = new Array(questions.length).fill(null); // stores selected option index per question
+
+          var questionArea = document.getElementById('question-area');
+          var prevBtn = document.getElementById('prev-btn');
+          var nextBtn = document.getElementById('next-btn');
+          var submitBtn = document.getElementById('submit-btn');
+          var progress = document.getElementById('progress');
+          var answersJson = document.getElementById('answers-json');
+          var form = document.getElementById('take-quiz-form');
+
+          // Basic HTML escaper
+          function escapeHtml(str) {
+            if (typeof str !== 'string') return '';
+            return str.replace(/[&<>"']/g, function (m) {
+              return ({
+                '&': '&amp;',
+                '<': '&lt;',
+                '>': '&gt;',
+                '"': '&quot;',
+                "'": '&#39;'
+              })[m];
+            });
+          }
+
+          function renderQuestion(idx) {
+            var q = questions[idx];
+            if (!q) {
+              questionArea.innerHTML = '<div class="p-4 border rounded-lg text-gray-600">Question unavailable.</div>';
+              progress.textContent = '';
+              prevBtn.disabled = true;
+              nextBtn.classList.add('hidden');
+              submitBtn.classList.add('hidden');
+              return;
+            }
+
+            var html = '';
+            html += '<div class="p-4 border rounded-lg">';
+            html += '<div class="mb-3"><div class="text-sm text-gray-500">Question ' + (idx + 1) + ' of ' + questions.length + '</div></div>';
+            html += '<div class="mb-4"><div class="font-medium text-gray-800 mb-2">' + escapeHtml(q.question) + '</div></div>';
+
+            // options
+            html += '<div class="space-y-2">';
+            if (Array.isArray(q.options) && q.options.length) {
+              q.options.forEach(function (opt, optIndex) {
+                var checked = (answers[idx] === optIndex) ? 'checked' : '';
+                // name is unique per question so only one selected per question
+                html += '<label class="block bg-gray-50 px-3 py-2 rounded-lg cursor-pointer">';
+                html += '<input type="radio" name="q_' + idx + '" value="' + optIndex + '" class="mr-3" ' + checked + ' />';
+                html += '<span>' + escapeHtml(opt) + '</span>';
+                html += '</label>';
+              });
+            } else {
+              html += '<div class="text-sm text-gray-500">No options provided.</div>';
+            }
+            html += '</div>'; // options
+            html += '</div>'; // wrapper
+
+            questionArea.innerHTML = html;
+
+            // update progress and navigation
+            progress.textContent = 'Question ' + (idx + 1) + ' / ' + questions.length;
+            prevBtn.disabled = idx === 0;
+
+            if (idx === questions.length - 1) {
+              nextBtn.classList.add('hidden');
+              submitBtn.classList.remove('hidden');
+            } else {
+              nextBtn.classList.remove('hidden');
+              submitBtn.classList.add('hidden');
+            }
+
+            // wire up change handlers for the radios to capture answers immediately
+            var radios = questionArea.querySelectorAll('input[type="radio"]');
+            radios.forEach(function (r) {
+              r.addEventListener('change', function (ev) {
+                answers[idx] = parseInt(ev.target.value, 10);
+              });
+            });
+          }
+
+          // navigation
+          prevBtn.addEventListener('click', function () {
+            // save current selection (if any)
+            var sel = questionArea.querySelector('input[type="radio"]:checked');
+            if (sel) answers[currentIndex] = parseInt(sel.value, 10);
+
+            if (currentIndex > 0) {
+              currentIndex--;
+              renderQuestion(currentIndex);
+            }
+          });
+
+          nextBtn.addEventListener('click', function () {
+            // save current selection (if any)
+            var sel = questionArea.querySelector('input[type="radio"]:checked');
+            if (sel) answers[currentIndex] = parseInt(sel.value, 10);
+
+            if (currentIndex < questions.length - 1) {
+              currentIndex++;
+              renderQuestion(currentIndex);
+            }
+          });
+
+          // form submit: serialize answers into hidden input
+          form.addEventListener('submit', function (e) {
+            // capture current selection before submit
+            var sel = questionArea.querySelector('input[type="radio"]:checked');
+            if (sel) answers[currentIndex] = parseInt(sel.value, 10);
+
+            // By default allow partial submissions (null for unanswered). If you want to require all answered, uncomment validation below.
+            /*
+            if (answers.includes(null)) {
+              e.preventDefault();
+              alert('Please answer all questions before submitting!');
+              return;
+            }
+            */
+
+            answersJson.value = JSON.stringify(answers);
+            // form will submit normally
+          });
+
+          // initial render
+          renderQuestion(0);
+        })();
+      </script>
