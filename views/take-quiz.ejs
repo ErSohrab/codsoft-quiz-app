@@ -25,6 +25,16 @@
               </p>
             </header>
 
+            <div class="flex justify-end mb-4">
+              <div id="timer-wrapper" class="w-20 h-20 relative" aria-hidden="false">
+                <svg class="absolute inset-0 w-full h-full transform -rotate-90" viewBox="0 0 100 100" role="img" aria-label="Quiz timer">
+                  <circle cx="50" cy="50" r="45" stroke="#e5e7eb" stroke-width="10" fill="none"></circle>
+                  <circle id="timer-ring" cx="50" cy="50" r="45" stroke="#34d399" stroke-width="10" stroke-linecap="round" fill="none" stroke-dasharray="282.743" stroke-dashoffset="0"></circle>
+                </svg>
+                <div id="timer-text" class="absolute inset-0 flex items-center justify-center text-sm font-semibold text-gray-800">0:00</div>
+              </div>
+            </div>
+
             <form id="take-quiz-form" action="/quizzes/<%= quiz._id %>/submit" method="POST" class="space-y-6">
               <!-- Hidden fields -->
               <input type="hidden" id="quiz-id" name="quizId" value="<%= quiz._id %>" />
@@ -76,6 +86,8 @@
     let currentIndex = 0;
     const answers = new Array(questions.length).fill(null); // stores selected option index per question
 
+    // timer setup moved below after DOM refs
+
           var questionArea = document.getElementById('question-area');
           var prevBtn = document.getElementById('prev-btn');
           var nextBtn = document.getElementById('next-btn');
@@ -83,6 +95,65 @@
           var progress = document.getElementById('progress');
           var answersJson = document.getElementById('answers-json');
           var form = document.getElementById('take-quiz-form');
+
+          // Circular ring timer: uses `quiz.duration` in seconds (0 = no timer)
+          (function setupCircularTimer(){
+            const durationSeconds = Number(quiz.duration) && !Number.isNaN(Number(quiz.duration)) ? Number(quiz.duration) : 0;
+            const timerWrapper = document.getElementById('timer-wrapper');
+            const ring = document.getElementById('timer-ring');
+            const timerText = document.getElementById('timer-text');
+            if (!durationSeconds) {
+              if (timerWrapper) timerWrapper.style.display = 'none';
+              return;
+            }
+
+            const radius = 45;
+            const circumference = 2 * Math.PI * radius;
+            if (ring) {
+              ring.style.strokeDasharray = String(circumference);
+              ring.style.transition = 'stroke-dashoffset 0.35s linear, stroke 0.35s linear';
+            }
+
+            let remaining = durationSeconds;
+            function formatTime(s) {
+              const m = Math.floor(s / 60);
+              const ss = s % 60;
+              return String(m) + ':' + String(ss).padStart(2, '0');
+            }
+
+            function setRingForRemaining(rem) {
+              const fraction = Math.max(0, Math.min(1, rem / durationSeconds));
+              const offset = circumference * (1 - fraction);
+              if (ring) ring.style.strokeDashoffset = String(offset);
+              // color thresholds: >50% green, >20% orange, else red
+              if (ring) {
+                if (fraction > 0.5) ring.setAttribute('stroke', '#34d399');
+                else if (fraction > 0.2) ring.setAttribute('stroke', '#f59e0b');
+                else ring.setAttribute('stroke', '#ef4444');
+              }
+            }
+
+            // initial render
+            if (timerText) timerText.textContent = formatTime(remaining);
+            setRingForRemaining(remaining);
+
+            const timerInterval = setInterval(function () {
+              remaining = remaining - 1;
+              if (timerText) timerText.textContent = formatTime(Math.max(0, remaining));
+              setRingForRemaining(remaining);
+              if (remaining <= 0) {
+                clearInterval(timerInterval);
+                // capture current selection
+                try {
+                  var sel = questionArea.querySelector('input[type="radio"]:checked');
+                  if (sel) answers[currentIndex] = parseInt(sel.value, 10);
+                  answersJson.value = JSON.stringify(answers);
+                } catch (e) { /* ignore */ }
+                try { nextBtn.disabled = true; prevBtn.disabled = true; submitBtn.disabled = true; } catch (e) {}
+                form.submit();
+              }
+            }, 1000);
+          })();
 
           // Basic HTML escaper
           function escapeHtml(str) {

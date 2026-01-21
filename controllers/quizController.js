@@ -6,13 +6,16 @@ exports.getCreateQuiz = (req, res) => {
 
 exports.postCreateQuiz = async (req, res) => {
   try {
-    const { title, questions } = req.body;
+    const { title, questions, duration } = req.body;
+
+    const durationSeconds = Number(duration) && !Number.isNaN(Number(duration)) ? Number(duration) : 0;
 
     const quiz = new Quiz({
       title,
       creatorId: req.session.userId,
       creatorName: req.session.username,
-      questions: JSON.parse(questions)
+      questions: JSON.parse(questions),
+      duration: durationSeconds
     });
 
     await quiz.save();

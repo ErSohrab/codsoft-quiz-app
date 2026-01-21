@@ -32,6 +32,10 @@ const quizSchema = new mongoose.Schema({
     required: true
   },
   questions: [questionSchema],
+  duration: {
+    type: Number,
+    default: 0 // duration in seconds; 0 means no limit
+  },
   createdAt: {
     type: Date,
     default: Date.now
