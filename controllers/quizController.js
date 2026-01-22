@@ -149,3 +149,33 @@ exports.postSubmitQuiz = async (req, res) => {
     res.redirect('/quiz-list');
   }
 };
+
+exports.deleteQuiz = async (req, res) => {
+  try {
+    const quizId = req.params.id;
+
+    // Verify the quiz exists and belongs to the current user
+    const quiz = await Quiz.findById(quizId);
+    if (!quiz) {
+      return res.status(404).json({ error: 'Quiz not found' });
+    }
+
+    // Verify the user is the creator
+    if (quiz.creatorId.toString() !== req.session.userId) {
+      return res.status(403).json({ error: 'Not authorized to delete this quiz' });
+    }
+
+    // Delete all Results related to this quiz
+    const Result = require('../models/Result');
+    await Result.deleteMany({ quizId: quizId });
+
+    // Delete the quiz itself
+    await Quiz.findByIdAndDelete(quizId);
+
+    // Redirect back to my-quizzes
+    res.redirect('/my-quizzes');
+  } catch (error) {
+    console.error('Error deleting quiz:', error);
+    res.status(500).json({ error: 'Failed to delete quiz' });
+  }
+};

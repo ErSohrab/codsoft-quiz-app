@@ -27,11 +27,15 @@
 
             <div class="flex justify-end mb-4">
               <div id="timer-wrapper" class="w-20 h-20 relative" aria-hidden="false">
-                <svg class="absolute inset-0 w-full h-full transform -rotate-90" viewBox="0 0 100 100" role="img" aria-label="Quiz timer">
+                <svg class="absolute inset-0 w-full h-full transform -rotate-90" viewBox="0 0 100 100" role="img"
+                  aria-label="Quiz timer">
                   <circle cx="50" cy="50" r="45" stroke="#e5e7eb" stroke-width="10" fill="none"></circle>
-                  <circle id="timer-ring" cx="50" cy="50" r="45" stroke="#34d399" stroke-width="10" stroke-linecap="round" fill="none" stroke-dasharray="282.743" stroke-dashoffset="0"></circle>
+                  <circle id="timer-ring" cx="50" cy="50" r="45" stroke="#34d399" stroke-width="10"
+                    stroke-linecap="round" fill="none" stroke-dasharray="282.743" stroke-dashoffset="0"></circle>
                 </svg>
-                <div id="timer-text" class="absolute inset-0 flex items-center justify-center text-sm font-semibold text-gray-800">0:00</div>
+                <div id="timer-text"
+                  class="absolute inset-0 flex items-center justify-center text-sm font-semibold text-gray-800">0:00
+                </div>
               </div>
             </div>
 
@@ -71,22 +75,22 @@
     <%- include('partials/footer') %>
 
       <script>
-  (function () {
-    // embed server-side quiz safely into client-side JS
-    // use <%- %> (raw) to inject the JSON; JSON.stringify on server makes a valid JS object literal
-    const quiz = <%- JSON.stringify(quiz || {}) %>;
+        (function () {
+          // embed server-side quiz safely into client-side JS
+          // use <%- %> (raw) to inject the JSON; JSON.stringify on server makes a valid JS object literal
+          const quiz = <%- JSON.stringify(quiz || {}) %>;
 
-    // sanity check
-    if (!quiz || !Array.isArray(quiz.questions)) {
-      console.warn('No quiz questions provided or questions is not an array', quiz);
-      // optionally render "Quiz not found" UI or return
-    }
+          // sanity check
+          if (!quiz || !Array.isArray(quiz.questions)) {
+            console.warn('No quiz questions provided or questions is not an array', quiz);
+            // optionally render "Quiz not found" UI or return
+          }
 
-    const questions = Array.isArray(quiz.questions) ? quiz.questions : [];
-    let currentIndex = 0;
-    const answers = new Array(questions.length).fill(null); // stores selected option index per question
+          const questions = Array.isArray(quiz.questions) ? quiz.questions : [];
+          let currentIndex = 0;
+          const answers = new Array(questions.length).fill(null); // stores selected option index per question
 
-    // timer setup moved below after DOM refs
+          // timer setup moved below after DOM refs
 
           var questionArea = document.getElementById('question-area');
           var prevBtn = document.getElementById('prev-btn');
@@ -97,7 +101,7 @@
           var form = document.getElementById('take-quiz-form');
 
           // Circular ring timer: uses `quiz.duration` in seconds (0 = no timer)
-          (function setupCircularTimer(){
+          (function setupCircularTimer() {
             const durationSeconds = Number(quiz.duration) && !Number.isNaN(Number(quiz.duration)) ? Number(quiz.duration) : 0;
             const timerWrapper = document.getElementById('timer-wrapper');
             const ring = document.getElementById('timer-ring');
@@ -149,7 +153,7 @@
                   if (sel) answers[currentIndex] = parseInt(sel.value, 10);
                   answersJson.value = JSON.stringify(answers);
                 } catch (e) { /* ignore */ }
-                try { nextBtn.disabled = true; prevBtn.disabled = true; submitBtn.disabled = true; } catch (e) {}
+                try { nextBtn.disabled = true; prevBtn.disabled = true; submitBtn.disabled = true; } catch (e) { }
                 form.submit();
               }
             }, 1000);

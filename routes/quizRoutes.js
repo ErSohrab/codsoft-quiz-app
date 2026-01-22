@@ -10,5 +10,6 @@ router.get('/my-quizzes', isAuthenticated, isCreator, quizController.getMyQuizze
 router.get('/quiz-list', isAuthenticated, isCandidate, quizController.getQuizList);
 router.get('/take-quiz/:id', isAuthenticated, isCandidate, quizController.getTakeQuiz);
 router.post('/quizzes/:id/submit', isAuthenticated, isCandidate, quizController.postSubmitQuiz);
+router.post('/quizzes/:id/delete', isAuthenticated, isCreator, quizController.deleteQuiz);
 
 module.exports = router;
