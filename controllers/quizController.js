@@ -179,3 +179,88 @@ exports.deleteQuiz = async (req, res) => {
     res.status(500).json({ error: 'Failed to delete quiz' });
   }
 };
+
+exports.getEditQuiz = async (req, res) => {
+  try {
+    const quizId = req.params.id;
+    const quiz = await Quiz.findById(quizId);
+    if (!quiz) {
+      return res.status(404).send('Quiz not found');
+    }
+
+    // ensure owner
+    if (quiz.creatorId.toString() !== req.session.userId) {
+      return res.status(403).send('Not authorized to edit this quiz');
+    }
+
+    res.render('edit-quiz', { quiz, error: null, success: null });
+  } catch (error) {
+    console.error('Error loading edit quiz:', error);
+    res.redirect('/my-quizzes');
+  }
+};
+
+exports.postEditQuiz = async (req, res) => {
+  try {
+    const quizId = req.params.id;
+    const quiz = await Quiz.findById(quizId);
+    if (!quiz) {
+      return res.status(404).send('Quiz not found');
+    }
+
+    // ensure owner
+    if (quiz.creatorId.toString() !== req.session.userId) {
+      return res.status(403).send('Not authorized to edit this quiz');
+    }
+
+    const { title, questions, duration } = req.body;
+
+    // parse questions if string
+    let parsedQuestions = [];
+    try {
+      parsedQuestions = Array.isArray(questions) ? questions : JSON.parse(questions || '[]');
+    } catch (err) {
+      console.error('Failed to parse questions JSON on edit', err);
+      return res.render('edit-quiz', { quiz, error: 'Invalid questions format', success: null });
+    }
+
+    // apply updates
+    quiz.title = title || quiz.title;
+    quiz.questions = parsedQuestions;
+    quiz.duration = Number(duration) || 0;
+    quiz.updatedAt = new Date();
+
+    await quiz.save();
+
+    res.redirect('/my-quizzes');
+  } catch (error) {
+    console.error('Error updating quiz:', error);
+    res.status(500).send('Failed to update quiz');
+  }
+};
+
+exports.getQuizJson = async (req, res) => {
+  try {
+    const quizId = req.params.id;
+    const quiz = await Quiz.findById(quizId);
+    if (!quiz) {
+      return res.status(404).json({ error: 'Quiz not found' });
+    }
+
+    if (quiz.creatorId.toString() !== req.session.userId) {
+      return res.status(403).json({ error: 'Not authorized' });
+    }
+
+    res.json({
+      _id: quiz._id,
+      title: quiz.title,
+      questions: quiz.questions || [],
+      duration: quiz.duration || 0,
+      creatorName: quiz.creatorName || null,
+      createdAt: quiz.createdAt || null
+    });
+  } catch (error) {
+    console.error('Error returning quiz JSON:', error);
+    res.status(500).json({ error: 'Server error' });
+  }
+};

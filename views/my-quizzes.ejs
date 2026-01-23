@@ -42,7 +42,7 @@
             </div>
 
             <!-- action links (kept textual functionality only) -->
-            <a href="/quizzes/<%= quiz._id %>" class="inline-block px-3 py-2 rounded-lg bg-gray-100 hover:bg-gray-200">View</a>
+            <button type="button" class="view-btn inline-block px-3 py-2 rounded-lg bg-gray-100 hover:bg-gray-200" data-quiz-id="<%= quiz._id %>">View</button>
             <a href="/quizzes/<%= quiz._id %>/edit" class="inline-block px-3 py-2 rounded-lg bg-gray-100 hover:bg-gray-200">Edit</a>
             <button type="button" class="delete-btn inline-block px-3 py-2 rounded-lg bg-red-100 text-red-700 hover:bg-red-200" data-quiz-id="<%= quiz._id %>" data-quiz-title="<%= quiz.title %>">Delete</button>
           </div>
@@ -53,16 +53,23 @@
 </main>
 
 <!-- Delete Confirmation Modal -->
-<div id="delete-modal" class="fixed inset-0 bg-black bg-opacity-50 hidden flex items-center justify-center z-50">
-  <div class="bg-white rounded-lg shadow-lg p-6 max-w-md w-full mx-4">
-    <h2 class="text-xl font-bold mb-2">Delete Quiz?</h2>
-    <p class="text-gray-700 mb-1">Are you sure you want to delete:</p>
-    <p id="modal-quiz-title" class="text-lg font-semibold text-red-600 mb-4"></p>
-    <p class="text-sm text-gray-600 mb-6">This action will also delete all student results for this quiz. This cannot be undone.</p>
-    
-    <div class="flex gap-3 justify-end">
-      <button id="modal-cancel-btn" class="px-4 py-2 rounded-lg bg-gray-200 hover:bg-gray-300">Cancel</button>
-      <button id="modal-confirm-btn" class="px-4 py-2 rounded-lg bg-red-600 text-white hover:bg-red-700">Delete</button>
+<%- include('delete-quiz') %>
+
+<!-- View Quiz Modal -->
+<div id="view-quiz-modal" class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 hidden">
+  <div class="bg-white w-full max-w-3xl rounded-2xl p-6 shadow-lg overflow-auto max-h-[80vh]">
+    <div class="flex justify-between items-center mb-4">
+      <h2 id="view-quiz-title" class="text-xl font-bold">Quiz Title</h2>
+      <button id="view-close-btn" class="text-gray-600 hover:text-gray-800">✕</button>
+    </div>
+
+    <div class="text-sm text-gray-500 mb-3" id="view-meta"></div>
+
+    <div id="view-questions" class="space-y-4"></div>
+
+    <div class="mt-4 text-right">
+      <a id="edit-from-view" href="#" class="inline-block px-3 py-2 rounded-lg bg-indigo-600 text-white hover:bg-indigo-700">Edit</a>
+      <button id="close-bottom-btn" class="ml-2 inline-block px-3 py-2 rounded-lg bg-gray-200 hover:bg-gray-300">Close</button>
     </div>
   </div>
 </div>
@@ -87,6 +94,77 @@
         modalTitle.textContent = quizTitle;
         modal.classList.remove('hidden');
       });
+    });
+
+    // View modal logic
+    const viewButtons = document.querySelectorAll('.view-btn');
+    const viewModal = document.getElementById('view-quiz-modal');
+    const viewTitle = document.getElementById('view-quiz-title');
+    const viewMeta = document.getElementById('view-meta');
+    const viewQuestions = document.getElementById('view-questions');
+    const viewClose = document.getElementById('view-close-btn');
+    const closeBottom = document.getElementById('close-bottom-btn');
+    const editFromView = document.getElementById('edit-from-view');
+
+    function humanDate(d) {
+      try { return new Date(d).toLocaleString(); } catch(e) { return '' }
+    }
+
+    viewButtons.forEach(function(btn) {
+      btn.addEventListener('click', async function() {
+        const id = btn.getAttribute('data-quiz-id');
+        if (!id) return;
+        viewQuestions.innerHTML = '<div class="p-4 text-center text-gray-500">Loading...</div>';
+        viewTitle.textContent = '';
+        viewMeta.textContent = '';
+        viewModal.classList.remove('hidden');
+
+        try {
+          const res = await fetch('/api/quizzes/' + id, { credentials: 'same-origin' });
+          if (!res.ok) {
+            const err = await res.json().catch(()=>({error:'Failed'}));
+            viewQuestions.innerHTML = '<div class="p-4 text-center text-red-500">' + (err.error || 'Failed to load quiz') + '</div>';
+            return;
+          }
+          const data = await res.json();
+          viewTitle.textContent = data.title || 'Quiz';
+          viewMeta.textContent = 'Created: ' + humanDate(data.createdAt) + ' • Duration: ' + ((data.duration||0)/60) + ' min • Questions: ' + (data.questions?data.questions.length:0);
+
+          // build question list
+          viewQuestions.innerHTML = '';
+          (data.questions || []).forEach(function(q, idx) {
+            const qWrap = document.createElement('div');
+            qWrap.className = 'p-4 bg-gray-50 rounded-lg';
+            let html = '<div class="font-medium mb-2">' + (idx+1) + '. ' + (q.question || '') + '</div>';
+            html += '<div class="space-y-1">';
+            (q.options || []).forEach(function(opt, oi) {
+              const isCorrect = (Number(q.correctAnswer) === oi);
+              html += '<div class="flex items-center gap-3">'
+                + '<div class="w-3 h-3 rounded-full ' + (isCorrect ? 'bg-green-500' : 'bg-gray-300') + '"></div>'
+                + '<div class="flex-1 ' + (isCorrect ? 'text-green-700 font-semibold' : 'text-gray-700') + '">' + (opt || '') + '</div>'
+                + '</div>';
+            });
+            html += '</div>';
+            qWrap.innerHTML = html;
+            viewQuestions.appendChild(qWrap);
+          });
+
+          editFromView.href = '/quizzes/' + id + '/edit';
+        } catch (err) {
+          viewQuestions.innerHTML = '<div class="p-4 text-center text-red-500">Failed to load quiz</div>';
+        }
+      });
+    });
+
+    function closeView() {
+      viewModal.classList.add('hidden');
+      viewQuestions.innerHTML = '';
+    }
+
+    viewClose.addEventListener('click', closeView);
+    closeBottom.addEventListener('click', closeView);
+    viewModal.addEventListener('click', function(e) {
+      if (e.target === viewModal) closeView();
     });
 
     // Hide modal on cancel
