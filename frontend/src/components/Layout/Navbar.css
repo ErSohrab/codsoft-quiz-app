@@ -1,0 +1,88 @@
+.navbar {
+  background-color: #282c34;
+  padding: 1rem 0;
+  color: white;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.navbar-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 2rem;
+}
+
+.navbar-brand h1 {
+  margin: 0;
+  font-size: 1.5rem;
+  font-weight: bold;
+}
+
+.navbar-menu {
+  display: flex;
+  gap: 2rem;
+  align-items: center;
+}
+
+.user-info {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+}
+
+.role-badge {
+  background-color: #61dafb;
+  color: #282c34;
+  padding: 0.25rem 0.75rem;
+  border-radius: 20px;
+  font-size: 0.85rem;
+  font-weight: bold;
+}
+
+.nav-link,
+.btn-logout {
+  padding: 0.5rem 1rem;
+  border-radius: 4px;
+  text-decoration: none;
+  border: none;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.nav-link {
+  color: white;
+  border: 2px solid #61dafb;
+  background: transparent;
+}
+
+.nav-link:hover {
+  background-color: #61dafb;
+  color: #282c34;
+}
+
+.btn-logout {
+  background-color: #ff6b6b;
+  color: white;
+  border: none;
+  font-weight: bold;
+}
+
+.btn-logout:hover {
+  background-color: #ff5252;
+}
+
+@media (max-width: 768px) {
+  .navbar-container {
+    padding: 0 1rem;
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .navbar-menu {
+    gap: 1rem;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+}
