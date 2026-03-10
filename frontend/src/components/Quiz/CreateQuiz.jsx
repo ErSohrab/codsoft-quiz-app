@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import BackButton from '../Common/BackButton';
 import { quizAPI } from '../../services/api';
 import './Quiz.css';
 
@@ -91,6 +92,7 @@ const CreateQuiz = () => {
 
   return (
     <div className="create-quiz-container">
+      <BackButton fallback="/my-quizzes" />
       <h1>Create a New Quiz</h1>
       {error && <div className="error-message">{error}</div>}
       {success && <div className="success-message">{success}</div>}

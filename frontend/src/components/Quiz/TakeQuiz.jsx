@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import BackButton from '../Common/BackButton';
 import { quizAPI, resultAPI } from '../../services/api';
 import './Quiz.css';
 
@@ -95,6 +96,7 @@ const TakeQuiz = ({ quizId }) => {
 
   return (
     <div className="take-quiz-container">
+      <BackButton fallback="/quiz-list" />
       <div className="quiz-header">
         <h1>{quiz.title}</h1>
         <div className="quiz-progress">

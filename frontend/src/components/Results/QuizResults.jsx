@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
+import BackButton from '../Common/BackButton';
 import { resultAPI } from '../../services/api';
 import './Results.css';
 
@@ -31,6 +32,7 @@ const QuizResults = ({ quizId }) => {
 
   return (
     <div className="results-container">
+      <BackButton fallback="/my-quizzes" />
       <h1>Quiz Results</h1>
       <Link to="/my-quizzes" className="btn-home">
         Back to My Quizzes

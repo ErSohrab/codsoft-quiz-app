@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import BackButton from '../Common/BackButton';
 import { useAuth } from '../../context/AuthContext';
 import { getDefaultRouteForRole } from '../../utils/access';
 import './Auth.css';
@@ -44,6 +45,7 @@ const Login = () => {
   return (
     <div className="auth-container">
       <div className="auth-card">
+        <BackButton fallback="/" />
         <h2>Login</h2>
         {errors.form && <div className="error-message">{errors.form}</div>}
         <form onSubmit={handleSubmit}>

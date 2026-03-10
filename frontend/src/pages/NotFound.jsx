@@ -1,8 +1,10 @@
 import React from 'react';
+import BackButton from '../components/Common/BackButton';
 
 const NotFound = () => {
   return (
     <div style={styles.container}>
+      <BackButton fallback="/" />
       <h1 style={styles.heading}>404</h1>
       <h2 style={styles.subheading}>Page Not Found</h2>
       <p style={styles.message}>

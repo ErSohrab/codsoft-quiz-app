@@ -59,6 +59,33 @@ code {
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
+.back-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.65rem 1rem;
+  margin-bottom: 1.25rem;
+  border: 1px solid #cbd5e1;
+  border-radius: 999px;
+  background: white;
+  color: #1f2937;
+  cursor: pointer;
+  font-size: 0.95rem;
+  font-weight: 600;
+  transition: all 0.2s ease;
+}
+
+.back-button::before {
+  content: '<';
+  font-size: 0.9rem;
+}
+
+.back-button:hover {
+  border-color: #61dafb;
+  color: #0f172a;
+  background: #f0f9ff;
+}
+
 /* Scrollbar Styling */
 ::-webkit-scrollbar {
   width: 8px;

@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
+import BackButton from '../Common/BackButton';
 import { quizAPI } from '../../services/api';
 import './Quiz.css';
 
@@ -43,6 +44,7 @@ const MyQuizzes = () => {
 
   return (
     <div className="quiz-container">
+      <BackButton fallback="/" />
       <h1>My Quizzes</h1>
       <Link to="/create-quiz" className="btn-create-quiz">
         + Create New Quiz

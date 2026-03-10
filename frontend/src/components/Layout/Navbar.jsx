@@ -16,7 +16,7 @@ const Navbar = () => {
     <nav className="navbar">
       <div className="navbar-container">
         <div className="navbar-brand">
-          <Link to="/" className="nav-link">
+          <Link to="/" className="brand-link">
             <h1>Quiz App</h1>
           </Link>
         </div>
@@ -33,10 +33,10 @@ const Navbar = () => {
             </>
           ) : (
             <>
-              <Link to="/login" className="nav-link">
+              <Link to="/login" className="menu-link">
                 Login
               </Link>
-              <Link to="/register" className="nav-link">
+              <Link to="/register" className="menu-link">
                 Register
               </Link>
             </>

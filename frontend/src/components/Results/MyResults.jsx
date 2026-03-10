@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
+import BackButton from '../Common/BackButton';
 import { resultAPI } from '../../services/api';
 import './Results.css';
 
@@ -46,6 +47,7 @@ const MyResults = () => {
 
   return (
     <div className="results-container">
+      <BackButton fallback="/" />
       <h1>My Results</h1>
       {error && <div className="error-message">{error}</div>}
       {results.length === 0 ? (

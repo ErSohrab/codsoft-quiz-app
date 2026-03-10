@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
+import BackButton from '../Common/BackButton';
 import { resultAPI } from '../../services/api';
 import './Results.css';
 
@@ -40,6 +41,7 @@ const QuizResult = ({ resultId }) => {
 
   return (
     <div className="result-container">
+      <BackButton fallback="/my-results" />
       <div className="result-header">
         <h1>{result.quizTitle}</h1>
         <div className="score-display">
