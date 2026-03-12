@@ -1,10 +1,11 @@
 .result-container {
   max-width: 1000px;
   margin: 0 auto;
-  background: white;
+  background: var(--color-surface);
   padding: 2rem;
-  border-radius: 8px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  border-radius: 28px;
+  border: 1px solid var(--color-border);
+  box-shadow: var(--shadow-soft);
 }
 
 .result-header {
@@ -13,9 +14,10 @@
 }
 
 .result-header h1 {
-  color: #282c34;
+  color: var(--color-text);
   margin-bottom: 1.5rem;
   font-size: 2rem;
+  letter-spacing: -0.05em;
 }
 
 .score-display {
@@ -27,12 +29,16 @@
   width: 200px;
   height: 200px;
   border-radius: 50%;
-  border: 8px solid #61dafb;
+  border: 8px solid var(--color-primary);
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+  background: linear-gradient(
+    135deg,
+    var(--color-surface-muted) 0%,
+    var(--color-surface-strong) 100%
+  );
 }
 
 .score-text {
@@ -44,26 +50,26 @@
 
 .score-number {
   font-size: 3rem;
-  font-weight: bold;
-  color: #282c34;
+  font-weight: 800;
+  color: var(--color-text);
 }
 
 .score-total {
   font-size: 1.5rem;
-  color: #666;
+  color: var(--color-text-soft);
   margin-left: 0.25rem;
 }
 
 .percentage {
   font-size: 1.8rem;
-  font-weight: bold;
-  color: #282c34;
+  font-weight: 800;
+  color: var(--color-text);
   margin-bottom: 0.5rem;
 }
 
 .grade {
   font-size: 1.2rem;
-  font-weight: bold;
+  font-weight: 700;
 }
 
 .result-stats {
@@ -72,8 +78,9 @@
   gap: 1.5rem;
   margin: 2rem 0;
   padding: 1.5rem;
-  background-color: #f9f9f9;
-  border-radius: 8px;
+  background-color: var(--color-surface-muted);
+  border-radius: 22px;
+  border: 1px solid var(--color-border);
 }
 
 .stat {
@@ -82,7 +89,7 @@
 
 .stat-label {
   display: block;
-  color: #666;
+  color: var(--color-text-soft);
   font-size: 0.9rem;
   margin-bottom: 0.5rem;
   text-transform: uppercase;
@@ -91,8 +98,8 @@
 .stat-value {
   display: block;
   font-size: 1.8rem;
-  font-weight: bold;
-  color: #282c34;
+  font-weight: 800;
+  color: var(--color-text);
 }
 
 .detailed-answers {
@@ -100,27 +107,27 @@
 }
 
 .detailed-answers h2 {
-  color: #282c34;
+  color: var(--color-text);
   margin-bottom: 1rem;
-  border-bottom: 2px solid #eee;
+  border-bottom: 2px solid var(--color-border);
   padding-bottom: 0.5rem;
 }
 
 .answer-item {
   padding: 1.5rem;
-  border-radius: 6px;
+  border-radius: 18px;
   margin-bottom: 1rem;
   border-left: 4px solid;
 }
 
 .answer-item.correct {
-  background-color: #f0ffe0;
-  border-left-color: #51cf66;
+  background-color: rgba(18, 128, 92, 0.12);
+  border-left-color: var(--color-success);
 }
 
 .answer-item.incorrect {
-  background-color: #ffe6e6;
-  border-left-color: #ff6b6b;
+  background-color: rgba(207, 75, 95, 0.12);
+  border-left-color: var(--color-danger);
 }
 
 .answer-header {
@@ -131,41 +138,41 @@
 }
 
 .question-number {
-  font-weight: bold;
-  color: #282c34;
+  font-weight: 700;
+  color: var(--color-text);
 }
 
 .answer-status {
   padding: 0.25rem 0.75rem;
-  border-radius: 20px;
+  border-radius: 999px;
   font-size: 0.9rem;
-  font-weight: bold;
+  font-weight: 700;
 }
 
 .answer-status.correct {
-  background-color: #51cf66;
+  background-color: var(--color-success);
   color: white;
 }
 
 .answer-status.incorrect {
-  background-color: #ff6b6b;
+  background-color: var(--color-danger);
   color: white;
 }
 
 .question-text {
-  color: #282c34;
+  color: var(--color-text);
   font-weight: 500;
   margin: 0.5rem 0;
 }
 
 .answer-text {
-  color: #333;
+  color: var(--color-text-soft);
   margin: 0.5rem 0;
 }
 
 .correct-answer {
-  color: #51cf66;
-  font-weight: bold;
+  color: var(--color-success);
+  font-weight: 700;
   margin: 0.5rem 0;
 }
 
@@ -179,47 +186,51 @@
 .btn-retake,
 .btn-home {
   padding: 0.75rem 2rem;
-  border-radius: 4px;
+  border-radius: 14px;
   text-decoration: none;
   border: none;
   cursor: pointer;
-  font-weight: bold;
-  transition: all 0.3s;
+  font-weight: 700;
+  transition: all 0.2s ease;
 }
 
 .btn-retake {
-  background-color: #61dafb;
-  color: #282c34;
-}
-
-.btn-retake:hover {
-  background-color: #4fa8c5;
-}
-
-.btn-home {
-  background-color: #999;
+  background-color: var(--color-primary);
   color: white;
 }
 
-.btn-home:hover {
-  background-color: #666;
+.btn-retake:hover {
+  filter: brightness(1.05);
 }
 
-/* Results Table */
+.btn-home {
+  background-color: var(--color-surface-strong);
+  color: var(--color-text);
+  border: 1px solid var(--color-border);
+}
+
+.btn-home:hover {
+  border-color: var(--color-primary);
+  color: var(--color-primary);
+}
+
 .results-container {
   max-width: 1000px;
   margin: 0 auto;
 }
 
 .results-container h1 {
-  color: #282c34;
+  color: var(--color-text);
   margin-bottom: 2rem;
+  font-size: clamp(2rem, 4vw, 2.75rem);
+  letter-spacing: -0.05em;
 }
 
 .results-table {
-  background: white;
-  border-radius: 8px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  background: var(--color-surface);
+  border-radius: 24px;
+  border: 1px solid var(--color-border);
+  box-shadow: var(--shadow-soft);
   overflow: auto;
 }
 
@@ -229,48 +240,50 @@ table {
 }
 
 table thead {
-  background-color: #282c34;
-  color: white;
+  background-color: var(--color-surface-strong);
+  color: var(--color-text);
 }
 
 table th {
   padding: 1rem;
   text-align: left;
-  font-weight: bold;
+  font-weight: 700;
 }
 
 table td {
   padding: 1rem;
-  border-bottom: 1px solid #eee;
+  border-bottom: 1px solid var(--color-border);
+  color: var(--color-text-soft);
 }
 
 table tbody tr:hover {
-  background-color: #f9f9f9;
+  background-color: var(--color-surface-muted);
 }
 
 .btn-view {
   display: inline-block;
   padding: 0.5rem 1rem;
-  background-color: #61dafb;
-  color: #282c34;
-  border-radius: 4px;
+  background-color: var(--color-primary);
+  color: white;
+  border-radius: 12px;
   text-decoration: none;
-  font-weight: bold;
-  transition: all 0.3s;
+  font-weight: 700;
+  transition: filter 0.2s ease;
 }
 
 .btn-view:hover {
-  background-color: #4fa8c5;
+  filter: brightness(1.05);
 }
 
 .no-results {
   text-align: center;
   padding: 2rem;
-  color: #666;
+  color: var(--color-text-soft);
   font-size: 1.1rem;
-  background: white;
-  border-radius: 8px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  background: var(--color-surface);
+  border-radius: 24px;
+  border: 1px solid var(--color-border);
+  box-shadow: var(--shadow-soft);
 }
 
 @media (max-width: 768px) {

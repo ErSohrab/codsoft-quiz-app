@@ -1,5 +1,5 @@
 export const ROLE_HOME_ROUTES = {
-  admin: '/my-quizzes',
+  admin: '/admin/dashboard',
   creator: '/my-quizzes',
   candidate: '/quiz-list',
 };

@@ -17,7 +17,8 @@ const styles = {
     display: 'flex',
     flexDirection: 'column',
     minHeight: '100vh',
-    backgroundColor: '#f5f5f5',
+    background:
+      'radial-gradient(circle at top, var(--color-bg-accent) 0%, var(--color-bg) 38%)',
   },
   main: {
     flexGrow: 1,

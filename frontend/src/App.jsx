@@ -7,10 +7,12 @@ import {
   useParams,
 } from 'react-router-dom';
 import { AuthProvider, useAuth } from './context/AuthContext';
+import { ThemeProvider } from './context/ThemeContext';
 import Layout from './components/Layout/Header';
 import Login from './components/Auth/Login';
 import Register from './components/Auth/Register';
 import Home from './pages/Home';
+import AdminDashboard from './pages/AdminDashboard';
 import NotFound from './pages/NotFound';
 import QuizList from './components/Quiz/QuizList';
 import CreateQuiz from './components/Quiz/CreateQuiz';
@@ -90,6 +92,16 @@ function AppRoutes() {
       <Route path="/login" element={<Login />} />
       <Route path="/register" element={<Register />} />
       <Route
+        path="/admin/dashboard"
+        element={
+          <ProtectedRoute requiredRole="admin">
+            <Layout>
+              <AdminDashboard />
+            </Layout>
+          </ProtectedRoute>
+        }
+      />
+      <Route
         path="/quiz-list"
         element={
           <ProtectedRoute requiredRole="candidate">
@@ -168,9 +180,11 @@ function AppRoutes() {
 function App() {
   return (
     <Router>
-      <AuthProvider>
-        <AppRoutes />
-      </AuthProvider>
+      <ThemeProvider>
+        <AuthProvider>
+          <AppRoutes />
+        </AuthProvider>
+      </ThemeProvider>
     </Router>
   );
 }

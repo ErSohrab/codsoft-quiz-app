@@ -28,6 +28,16 @@ export const authAPI = {
   getMe: () => api.get('/auth/me'),
 };
 
+export const adminAPI = {
+  getOverview: () => api.get('/admin/overview'),
+  getUsers: () => api.get('/admin/users'),
+  updateUserRole: (id, role) => api.patch(`/admin/users/${id}/role`, { role }),
+  deleteUser: (id) => api.delete(`/admin/users/${id}`),
+  getActivity: () => api.get('/admin/activity'),
+  getQuizzes: () => api.get('/admin/quizzes'),
+  getResults: () => api.get('/admin/results'),
+};
+
 // Quiz APIs
 export const quizAPI = {
   getAllQuizzes: () => api.get('/quizzes'),
